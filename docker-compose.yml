@@ -1,25 +1,37 @@
+version: "3"
+
+networks:
+  squid-net:
+    driver: bridge
+
 services:
   db:
     image: postgres:15-alpine
+    networks:
+      - squid-net
     environment:
       POSTGRES_DB: squid
+      POSTGRES_USER: squid
       POSTGRES_PASSWORD: postgres
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d squid"]
+      test: ["CMD-SHELL", "pg_isready -U squid -d squid"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
     volumes:
       - db-data:/var/lib/postgresql/data
     restart: unless-stopped
 
   api:
     build: .
+    networks:
+      - squid-net
     environment:
       - DB_NAME=squid
       - DB_PORT=5432
       - DB_HOST=db
       - DB_PASS=postgres
+      - DB_USER=squid
       - GQL_PORT=4350
     ports:
       - "4350:4350"
@@ -31,11 +43,14 @@ services:
 
   processor:
     build: .
+    networks:
+      - squid-net
     environment:
       - DB_NAME=squid
       - DB_PORT=5432
       - DB_HOST=db
       - DB_PASS=postgres
+      - DB_USER=squid
       - RPC_BITTENSOR_HTTP=https://entrypoint-finney.opentensor.ai
     command: ["sqd", "process:prod"]
     depends_on:
