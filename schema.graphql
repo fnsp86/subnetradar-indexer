@@ -1,0 +1,40 @@
+type Account @entity {
+  id: ID!
+  transfersOut: [Transfer!] @derivedFrom(field: "from")
+  transfersIn: [Transfer!] @derivedFrom(field: "to")
+  stakesAdded: [StakeEvent!] @derivedFrom(field: "coldkey")
+  stakesRemoved: [UnstakeEvent!] @derivedFrom(field: "coldkey")
+}
+
+type Transfer @entity {
+  id: ID!
+  blockNumber: Int! @index
+  timestamp: DateTime! @index
+  extrinsicHash: String @index
+  from: Account!
+  to: Account!
+  amount: BigInt!
+  fee: BigInt
+}
+
+type StakeEvent @entity {
+  id: ID!
+  blockNumber: Int! @index
+  timestamp: DateTime! @index
+  extrinsicHash: String @index
+  coldkey: Account!
+  hotkey: String! @index
+  netuid: Int! @index
+  amountStaked: BigInt!
+}
+
+type UnstakeEvent @entity {
+  id: ID!
+  blockNumber: Int! @index
+  timestamp: DateTime! @index
+  extrinsicHash: String @index
+  coldkey: Account!
+  hotkey: String! @index
+  netuid: Int! @index
+  amountUnstaked: BigInt!
+}
