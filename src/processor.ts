@@ -11,13 +11,13 @@ import {
 export const processor = new SubstrateBatchProcessor()
   .setGateway("https://v2.archive.subsquid.io/network/bittensor")
   .setRpcEndpoint({
-    url: process.env.RPC_BITTENSOR_HTTP || "https://entrypoint-finney.opentensor.ai",
+    // Archive node - has full historical state (unlike the pruned public endpoint)
+    url: process.env.RPC_BITTENSOR_HTTP || "https://archive.chain.opentensor.ai",
     rateLimit: 10,
     capacity: 5,
   })
-  // Start from recent blocks (RPC has pruned older state)
-  // The archive handles historical data, RPC is needed for runtime metadata
-  .setBlockRange({ from: 7_700_000 })
+  // Start from dTAO launch (v233) - staking with netuid begins here
+  .setBlockRange({ from: 4_920_000 })
   .addEvent({
     name: ["Balances.Transfer"],
     extrinsic: true,
