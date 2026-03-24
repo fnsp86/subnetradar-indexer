@@ -43,6 +43,7 @@ services:
       - DB_PASS=postgres
       - DB_USER=squid
       - RPC_BITTENSOR_HTTP=https://entrypoint-finney.opentensor.ai
+      - PROCESSOR_PROMETHEUS_PORT=9090
     command: ["sqd", "process:prod"]
     depends_on:
       db:
