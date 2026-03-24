@@ -15,10 +15,9 @@ export const processor = new SubstrateBatchProcessor()
     rateLimit: 10,
     capacity: 5,
   })
-  // Start from dTAO launch (v233) - staking with netuid begins here
-  .setBlockRange({ from: 4_920_000 })
-  // Use archive for historical data, only use RPC for recent/unfinalized blocks
-  .useArchiveOnly(true)
+  // Start from recent blocks (RPC has pruned older state)
+  // The archive handles historical data, RPC is needed for runtime metadata
+  .setBlockRange({ from: 7_700_000 })
   .addEvent({
     name: ["Balances.Transfer"],
     extrinsic: true,
