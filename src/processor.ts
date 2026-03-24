@@ -1,4 +1,3 @@
-import { assertNotNull } from "@subsquid/util-internal";
 import {
   BlockHeader,
   DataHandlerContext,
@@ -12,14 +11,14 @@ import {
 export const processor = new SubstrateBatchProcessor()
   .setGateway("https://v2.archive.subsquid.io/network/bittensor")
   .setRpcEndpoint({
-    url: assertNotNull(
-      process.env.RPC_BITTENSOR_HTTP,
-      "No RPC_BITTENSOR_HTTP supplied"
-    ),
+    url: process.env.RPC_BITTENSOR_HTTP || "https://entrypoint-finney.opentensor.ai",
     rateLimit: 10,
+    capacity: 5,
   })
   // Start from dTAO launch (v233) - staking with netuid begins here
   .setBlockRange({ from: 4_920_000 })
+  // Use archive for historical data, only use RPC for recent/unfinalized blocks
+  .useArchiveOnly(true)
   .addEvent({
     name: ["Balances.Transfer"],
     extrinsic: true,
